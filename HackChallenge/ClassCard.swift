@@ -12,50 +12,78 @@ struct ClassCardView: View {
     let classItem: Class
     
     var body: some View {
-        HStack(alignment: .top, spacing: 16) {
+        HStack(spacing: 16) {
             
-            RoundedRectangle(cornerRadius: 8)
-                .stroke(Color.gray.opacity(0.4), lineWidth: 1)
-                .frame(width: 60, height: 60)
-                .foregroundColor(.blue)
+            RoundedRectangle(cornerRadius: 20)
+                .fill(Color(red: 0.88, green: 0.95, blue: 1.0))
+                .frame(width: 70, height: 70)
             
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: 6) {
                 
-                Text("\(classItem.name) \(classItem.section)")
-                    .font(.headline)
-                    .foregroundColor(.primary)
+                HStack(spacing: 8) {
+                    Text("\(classItem.name) \(classItem.section)")
+                        .font(.system(size: 18, weight: .medium))
+                        .foregroundColor(.gray)
                 
-                Text("Time: \(classItem.time)")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
+                    if classItem.type == .lab {
+                        Text("LAB")
+                            .font(.system(size: 14))
+                            .foregroundColor(Color(.lightGray))
+                    }else if classItem.type == .lec {
+                        Text("LEC")
+                            .font(.system(size: 14))
+                            .foregroundColor(Color(.lightGray))
+                    }else{
+                        Text("DIS")
+                            .font(.system(size: 14))
+                            .foregroundColor(Color(.lightGray))
+                    }
+                    
+                }
                 
-                Text("Days: \(classItem.days)")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
+                Text("\(classItem.days) \(classItem.time)")
+                    .font(.system(size: 14))
+                    .foregroundColor(Color(.lightGray))
+                
+                Text("\(classItem.location)")
+                    .font(.system(size: 14))
+                    .foregroundColor(Color(.lightGray))
             }
             
             Spacer()
             
-            Button {
-                print("\(classItem.name) \(classItem.section) added")
-            } label: {
-                Image(systemName: "plus.circle")
-                    .font(.title2)
-                    .foregroundColor(.blue)
+            VStack() {
+                Spacer()
+                Button(action: {
+                    print("Added \(classItem.name) \(classItem.section)")
+                }) {
+                    Image(systemName: "plus")
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundColor(Color(red: 0.93, green: 0.38, blue: 0.38))
+                        .padding(6)
+                        .overlay(
+                            Circle()
+                                .stroke(Color(red: 0.93, green: 0.38, blue: 0.38), lineWidth: 3)
+                        )
+            }
             }
         }
-        .padding()
-        .background(Color(.systemGray6))
-        .cornerRadius(16)
-        .shadow(color: .black.opacity(0.08), radius: 4, x: 0, y: 2)
+        .padding(.horizontal)
+    }
+}
+
+extension Color {
+    init(hex: UInt, alpha: Double = 1) {
+        self.init(
+            .sRGB,
+            red: Double((hex >> 16) & 0xff) / 255,
+            green: Double((hex >> 08) & 0xff) / 255,
+            blue: Double((hex >> 00) & 0xff) / 255,
+            opacity: alpha
+        )
     }
 }
 
 #Preview {
-    ClassCardView(classItem: Class(
-        name: "CHEM 2070",
-        section: "LEC 001",
-        time: "8:00 AM – 8:50 AM",
-        days: "MWF"
-    ))
+    ClassCardView(classItem: Class(name: "CHEM 2070", section: "001", time: "8:00 AM – 8:50 AM", days: "MWF", location: "Baker Laboratory 200", type: .lec))
 }

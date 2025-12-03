@@ -1,93 +1,133 @@
-
+//
+//  ContentView.swift
+//  HackChallenge
+//
+//  Created by Nguyen Huu An Khang  on 11/30/25.
+//
 import SwiftUI
 
 struct ContentView: View {
     var body: some View {
         NavigationStack {
-            VStack(spacing: 20) {
-                
-                HStack {
-                    Image(systemName: "line.3.horizontal")
-                        .font(.title2)
+            ScrollView {
+                VStack(alignment: .leading, spacing: 24) {
                     
-                    Spacer()
-                    
-                    Image(systemName: "person.crop.circle")
-                        .font(.largeTitle)
-                    
-                    Spacer()
-                    
-                    Image(systemName: "magnifyingglass")
-                        .font(.title2)
-                }
-                .padding(.horizontal)
-                
-                Divider()
-                
-                VStack(spacing: 8) {
-                    Image(systemName: "person.crop.circle.fill")
-                        .resizable()
-                        .frame(width: 90, height: 90)
-                        .foregroundColor(.gray)
-                    
-                    Button("Edit Profile") { }
-                        .font(.subheadline)
-                        .foregroundColor(.primary)
-                    
-                    Text("Jack Nguyen")
-                        .font(.title3)
-                        .fontWeight(.semibold)
-                    
-                    Text("hn365@cornell.edu")
-                        .foregroundColor(.black)
-                    
-                    Text("123-456-7890")
-                        .foregroundColor(.secondary)
-                }
-                .padding(.top, 4)
-                
-                HStack {
-                    Text("My Schedule")
-                        .font(.title2)
-                        .fontWeight(.bold)
-                    Spacer()
-                }
-                .padding(.horizontal)
-                
-                HStack(spacing: 40) {
-                    Text("S"); Text("M"); Text("T"); Text("W"); Text("R"); Text("F"); Text("S")
-                }
-                .font(.headline)
-                .padding(.top, 5)
-                
-                ZStack {
-                    RoundedRectangle(cornerRadius: 20)
-                        .background(
-                            RoundedRectangle(cornerRadius: 20)
-                                .fill(Color.gray)
-                        )
-                        .frame(height: 250)
-                    
-                    Text("You have no classes added")
-                        .foregroundColor(Color.white)
-                }
-                .padding(.horizontal)
-                
-                NavigationLink {
-                    ClassSearchView()
-                } label: {
-                    Text("Add Classes")
-                        .font(.headline)
-                        .foregroundColor(.white)
-                        .padding()
-                        .frame(maxWidth: .infinity)
-                        .background(Color.blue)
-                        .cornerRadius(12)
-                        .padding(.horizontal)
-                }
-                
+                    VStack(spacing: 0) {
 
-                Spacer()
+                        HStack {
+                            Spacer()
+
+                            Image("person")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(height:60)
+                                .foregroundColor(Color(hex:0xC2C2C2))
+                            Spacer()
+                            Image("search")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(height:60)
+                                .foregroundColor(Color(hex:0xC2C2C2))
+                            Spacer()
+                        }
+                        .padding(.top, 20)
+                        .padding(.bottom, 12)
+
+
+                        HStack(spacing: 0) {
+                            Rectangle()
+                                .fill(Color(hex:0xF7798D))
+                                .frame(height: 4)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            Rectangle()
+                                .fill(Color.gray.opacity(0.4))
+                                .frame(height: 4)
+                                .frame(maxWidth: .infinity)
+                        }
+                    }
+                    .background(Color.white)
+                    
+                    
+                    HStack(alignment: .top, spacing: 30) {
+                        
+                        VStack(spacing: 14) {
+                            Image("person")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 100, height: 100)
+                                .foregroundColor(.gray.opacity(0.7))
+                            
+                            Button {
+                                // Ben do something here
+                            } label: {
+                                Text("Edit profile")
+                                    .font(.system(size: 14))
+                                    .fontWeight(.bold)
+                                    .padding(.horizontal, 20)
+                                    .padding(.vertical, 12)
+                                    .background(Color(hex:0xF7798D))
+                                    .foregroundColor(.white)
+                                    .cornerRadius(14)
+                            }
+                        }
+                        
+                        
+                        VStack(alignment: .leading, spacing: 10) {
+                            HStack(spacing: 8) {
+                                Text("Jack Nguyen")
+                                    .font(.system(size: 20))
+                                    .fontWeight(.medium)
+                                
+                                Text("(he/him)")
+                                    .foregroundColor(.gray.opacity(0.6))
+                                    .font(.system(size: 14))
+                                    .baselineOffset(2)
+                            }
+                            
+                            Text("hn365@cornell.edu")
+                                .foregroundColor(.gray)
+                            
+                            Text("123-456-7890")
+                                .foregroundColor(.gray)
+                        }
+                        .padding(.top,6)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .padding(.horizontal, 30)
+                    
+
+                    
+                    
+                    Text("My schedule")
+                        .font(.system(size: 32, weight: .semibold))
+                        .padding(.horizontal)
+                    
+                    
+                    RoundedRectangle(cornerRadius: 20)
+                        .stroke(Color.black, lineWidth: 3)
+                        .frame(height: 250)
+                        .padding(.horizontal,35)
+                        .overlay(
+                            Text("Calendar Placeholder")
+                                .foregroundColor(.gray)
+                        )
+                    
+                    
+                    NavigationLink {
+                        ClassSearchView()
+                    } label: {
+                        Text("Add classes")
+                            .font(.title3)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color(hex:0xF7798D))
+                            .cornerRadius(20)
+                            .padding(.horizontal, 40)
+                    }
+                    .padding(.top,35)
+                }
             }
         }
     }
