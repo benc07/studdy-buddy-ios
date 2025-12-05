@@ -51,6 +51,28 @@ extension NetworkManager {
 }
 
 extension NetworkManager {
+    func getSessions(sessionIDs: [Int], completion: @escaping ([Session]) -> Void) {
+        var results: [Session] = []
+        let group = DispatchGroup()
+
+        for id in sessionIDs {
+            group.enter()
+
+            getSession(id: id) { session in
+                if let session = session {
+                    results.append(session)
+                }
+                group.leave()
+            }
+        }
+
+        group.notify(queue: .main) {
+            completion(results.sorted { $0.id < $1.id })
+        }
+    }
+}
+
+extension NetworkManager {
     func getSession(id: Int, completion: @escaping (Session?) -> Void) {
         let url = "\(baseURL)/session/\(id)/"
 

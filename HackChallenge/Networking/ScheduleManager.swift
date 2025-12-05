@@ -21,5 +21,9 @@ class ScheduleManager: ObservableObject {
         }
     }
     
+    func isAdded(sessionID: Int) -> Bool {
+        addedSessions.contains { $0.session.id == sessionID }
+    }
+    
 }
 

@@ -20,68 +20,86 @@ struct ContentView: View {
     @State private var userMajor = "CS"
     @State private var userImage: UIImage? = nil
     
-    
+    @State private var showMenu = false
+
     var body: some View {
-        NavigationStack {
-            VStack(spacing:0) {
-                
-                HStack {
-                    Spacer()
+        ZStack {
+
+            NavigationStack {
+                VStack(spacing: 0) {
                     
-                    Button {
-                        selectedTab = .profile
-                    } label: {
-                        Image("person")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(height: 60)
-                            .foregroundColor(selectedTab == .profile ? Color(hex:0xF7798D) : Color(hex:0xC2C2C2))
+                    // TOP BAR
+                    HStack {
+                        Button {
+                            showMenu = true
+                        } label: {
+                            Image("3 rows")
+                                .resizable()
+                                .frame(width: 20, height: 20)
+                                .padding(.leading, 15)
+                        }
+                        
+                        Button {
+                            selectedTab = .profile
+                        } label: {
+                            Image("person")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(height: 60)
+                                .foregroundColor(selectedTab == .profile ? Color(hex:0xF7798D) : Color(hex:0xC2C2C2))
+                                .padding(.leading, 30)
+                        }
+                        
+                        Spacer()
+                        
+                        Button {
+                            selectedTab = .search
+                        } label: {
+                            Image("search")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(height: 60)
+                                .foregroundColor(selectedTab == .search ? Color(hex:0xF7798D) : Color(hex:0xC2C2C2))
+                                .padding(.leading, 35)
+                        }
+                        
+                        Spacer()
+                    }
+                    .padding(.top)
+                    .padding(.bottom, 12)
+                    
+                    // TAB BAR
+                    HStack(spacing: 0) {
+                        Rectangle()
+                            .fill(selectedTab == .profile ? Color(hex:0xF7798D) : Color.gray.opacity(0.4))
+                            .frame(height: 4)
+                            .frame(maxWidth: .infinity)
+                        
+                        Rectangle()
+                            .fill(selectedTab == .search ? Color(hex:0xF7798D) : Color.gray.opacity(0.4))
+                            .frame(height: 4)
+                            .frame(maxWidth: .infinity)
                     }
                     
-                    Spacer()
-                    
-                    Button {
-                        selectedTab = .search
-                    } label: {
-                        Image("search")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(height: 60)
-                            .foregroundColor(selectedTab == .search ? Color(hex:0xF7798D) : Color(hex:0xC2C2C2))
-                    }
-                    
-                    Spacer()
-                }
-                .padding(.top)
-                .padding(.bottom, 12)
-                
-                
-                HStack(spacing: 0) {
-                    Rectangle()
-                        .fill(selectedTab == .profile ? Color(hex:0xF7798D) : Color.gray.opacity(0.4))
-                        .frame(height: 4)
-                        .frame(maxWidth: .infinity)
-                    
-                    Rectangle()
-                        .fill(selectedTab == .search ? Color(hex:0xF7798D) : Color.gray.opacity(0.4))
-                        .frame(height: 4)
-                        .frame(maxWidth: .infinity)
-                }
-                
-                
-                ScrollView {
-                    if selectedTab == .profile {
-                        profileView
-                    } else {
-                        searchView
+                    ScrollView {
+                        if selectedTab == .profile {
+                            profileView
+                        } else {
+                            searchView
+                        }
                     }
                 }
             }
+            
+            // SIDE MENU OVERLAY (TOP OF EVERYTHING)
+            if showMenu {
+                SideMenuView(onClose: { showMenu = false })
+                    .transition(.move(edge: .leading))
+                    .zIndex(10)
+            }
         }
+        .animation(.easeInOut, value: showMenu)
     }
-    
-    
-    
     var profileView: some View {
         VStack(alignment: .leading, spacing: 24) {
             

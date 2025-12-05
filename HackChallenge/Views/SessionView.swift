@@ -8,53 +8,49 @@
 import SwiftUI
 
 struct SessionView: View {
-    @Environment(\.dismiss) var dismiss
-    
     let courseName: String
-    let sessions: [Session]
+    let courseID: Int        // New value we pass in
+
+    @State private var sessions: [Session] = []
+    @State private var isLoading = true
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             Text("Results")
                 .font(.system(size: 32, weight: .semibold))
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.leading,40)
+                .padding(.leading, 40)
 
-            // RESULTS LIST
-            ScrollView {
-                VStack() {
-                    ForEach(sessions.filter { session in
-                        let addedIDs = ScheduleManager.shared.addedSessions.map { $0.session.id }
-                        return !addedIDs.contains(session.id)   // Hide if added
-                    }) { session in
-                        SessionCardView(session: session, courseName: courseName)
-                            .padding(.horizontal, 37)
+            if isLoading {
+                ProgressView("Loading sessions...")
+                    .padding(.top, 40)
+            } else {
+                ScrollView {
+                    VStack {
+                        ForEach(sessions) { session in
+                            SessionCardView(session: session, courseName: courseName)
+                                .padding(.horizontal, 37)
+                        }
                     }
                 }
+                .padding(.top)
             }
-            .padding(.top)
+
             Spacer()
         }
         .padding(.top)
+        .onAppear {
+            loadSessions()
+        }
+    }
+
+    func loadSessions() {
+        NetworkManager.shared.getCourse(id: courseID) { course in
+            DispatchQueue.main.async {
+                self.sessions = course?.sessions ?? []
+                self.isLoading = false
+            }
+        }
     }
 }
 
-#Preview {
-    SessionView(
-        courseName: "Chem 2070",
-        sessions: [
-            Session(
-                id: 1,
-                class_number: "9709",
-                name: "LEC001",
-                time: "MoWeFri 8:00 AM – 8:50 AM"
-            ),
-            Session(
-                id: 2,
-                class_number: "9710",
-                name: "LEC002",
-                time: "MoWeFri 11:15 AM – 12:05 PM"
-            )
-        ]
-    )
-}

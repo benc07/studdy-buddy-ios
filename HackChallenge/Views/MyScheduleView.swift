@@ -30,7 +30,6 @@ struct MyScheduleView: View {
                             }
 
                         }
-                        .padding(.top, 10)
                     }
                 )
 

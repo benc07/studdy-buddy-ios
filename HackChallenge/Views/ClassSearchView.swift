@@ -74,7 +74,7 @@ struct ClassSearchView: View {
                             NavigationLink {
                                 SessionView(
                                     courseName: course.code,
-                                    sessions: course.sessions ?? []
+                                    courseID: course.id
                                 )
                             } label: {
                                 CourseCardView(course: course)

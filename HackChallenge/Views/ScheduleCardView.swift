@@ -38,8 +38,7 @@ struct ScheduleCardView: View {
             }
 
             }
-        .padding(.vertical, 10)
-        .padding(.horizontal, 4)
+        .padding(.top,10)
     }
 }
 

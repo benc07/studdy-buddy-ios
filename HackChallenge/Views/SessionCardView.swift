@@ -11,42 +11,42 @@ struct SessionCardView: View {
     let session: Session
     let courseName: String
 
+    @ObservedObject private var schedule = ScheduleManager.shared
+
     var body: some View {
         HStack(spacing: 16) {
 
-            // LEFT ICON BOX
+            // LEFT ICON
             Image("chem")
                 .resizable()
                 .scaledToFit()
                 .frame(width: 60, height: 60)
 
-            // MIDDLE TEXT CONTENT
+            // MIDDLE TEXT
             VStack(alignment: .leading, spacing: 5) {
-
-                HStack(spacing: 6) {
-                    Text("\(courseName)-\(session.name)")
-                        .font(.system(size: 16, weight: .semibold))
-                        .foregroundColor(Color(hex:0x777777))
-
-                }
+                Text("\(courseName)-\(session.name)")
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundColor(Color(hex:0x777777))
 
                 Text(session.time)
                     .font(.system(size: 13))
                     .foregroundColor(Color(hex:0xC2C2C2))
-
             }
 
+            Spacer()
 
             VStack{
                 Spacer()
-                Button {
-                    ScheduleManager.shared.add(session: session, courseName: courseName)
-                } label: {
-                    Image("add")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 15)
-                        .foregroundColor(Color(hex:0xE96D6D))
+                if !schedule.isAdded(sessionID: session.id) {
+                    Button {
+                        schedule.add(session: session, courseName: courseName)
+                    } label: {
+                        Image("add")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 15)
+                            .foregroundColor(Color(hex:0xE96D6D))
+                    }
                 }
             }
         }
@@ -54,6 +54,7 @@ struct SessionCardView: View {
         .padding(.horizontal, 4)
     }
 }
+
 
 #Preview {
     SessionCardView(
