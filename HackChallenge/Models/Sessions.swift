@@ -12,7 +12,6 @@ struct Session: nonisolated Decodable, Identifiable {
     let class_number: String
     let name: String
     let time: String
-
 }
 
 struct CourseSummary: Codable, Identifiable {

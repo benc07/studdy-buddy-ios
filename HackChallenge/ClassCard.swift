@@ -13,7 +13,6 @@ struct CourseCardView: View {
     var body: some View {
         HStack(spacing: 16) {
             
-            // Left rounded square icon
             RoundedRectangle(cornerRadius: 20)
                 .fill(Color.blue.opacity(0.1))
                 .frame(width: 60, height: 60)
@@ -24,7 +23,6 @@ struct CourseCardView: View {
                         .foregroundColor(.blue.opacity(0.6))
                 )
             
-            // Course name + type
             VStack(alignment: .leading, spacing: 4) {
                 Text(course.code)
                     .font(.system(size: 20, weight: .semibold))
@@ -39,18 +37,6 @@ struct CourseCardView: View {
         }
         .padding(.vertical, 12)
         .padding(.horizontal)
-    }
-}
-
-extension Color {
-    init(hex: UInt, alpha: Double = 1) {
-        self.init(
-            .sRGB,
-            red: Double((hex >> 16) & 0xff) / 255,
-            green: Double((hex >> 08) & 0xff) / 255,
-            blue: Double((hex >> 00) & 0xff) / 255,
-            opacity: alpha
-        )
     }
 }
 
