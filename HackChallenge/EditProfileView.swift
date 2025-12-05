@@ -1,82 +1,102 @@
-//
-//  EditProfileView.swift
-//  HackChallenge
-//
-//  Created by Ben Chen on 12/3/25.
-//
-
 import SwiftUI
 import PhotosUI
 
 struct EditProfileView: View {
     @Environment(\.dismiss) private var dismiss
 
+    // Editable fields
     @State var name: String
     @State var bio: String
+    @State var email: String
     @State var major: String
     @State var selectedImage: UIImage?
 
-    var onSave: (String, String, String, UIImage?) -> Void
+    // Callback to return updated values
+    var onSave: (String, String, String, String, UIImage?) -> Void
 
-    // Image picker
+    // Photo picker
     @State private var showPhotoPicker = false
     @State private var photoItem: PhotosPickerItem?
 
     var body: some View {
-        VStack(spacing: 24) {
+        ScrollView {
+            VStack(spacing: 24) {
 
-            // Profile Image
-            VStack {
-                if let selectedImage {
-                    Image(uiImage: selectedImage)
-                        .resizable()
-                        .scaledToFill()
-                        .frame(width: 120, height: 120)
-                        .clipShape(Circle())
-                        .onTapGesture { showPhotoPicker = true }
-                } else {
-                    Image(systemName: "person.circle.fill")
-                        .resizable()
-                        .scaledToFill()
-                        .frame(width: 120, height: 120)
-                        .foregroundColor(.gray)
-                        .onTapGesture { showPhotoPicker = true }
+                // MARK: - Profile Image
+                VStack {
+                    if let selectedImage {
+                        Image(uiImage: selectedImage)
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 120, height: 120)
+                            .clipShape(Circle())
+                            .onTapGesture { showPhotoPicker = true }
+                    } else {
+                        Image(systemName: "person.circle.fill")
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 120, height: 120)
+                            .foregroundColor(.gray)
+                            .onTapGesture { showPhotoPicker = true }
+                    }
                 }
-            }
-            .padding(.top, 40)
+                .padding(.top, 40)
 
-            Text(name)
-                .font(.system(size: 22, weight: .semibold))
-
-            Text(bio)
-                .font(.system(size: 16))
-                .multilineTextAlignment(.center)
+                // MARK: - Name Field
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Name")
+                        .font(.system(size: 16, weight: .medium))
+                    TextField("Enter your name", text: $name)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                }
                 .padding(.horizontal, 40)
 
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Major")
-                    .font(.system(size: 16))
+                // MARK: - Bio Field
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Bio")
+                        .font(.system(size: 16, weight: .medium))
+                    TextField("Enter your bio", text: $bio)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                }
+                .padding(.horizontal, 40)
 
-                TextField("Enter major", text: $major)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .padding(.horizontal, 4)
+                // MARK: - Email Field
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Email")
+                        .font(.system(size: 16, weight: .medium))
+                    TextField("Enter your email", text: $email)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .keyboardType(.emailAddress)
+                        .autocapitalization(.none)
+                }
+                .padding(.horizontal, 40)
+
+                // MARK: - Major Field
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Major")
+                        .font(.system(size: 16, weight: .medium))
+                    TextField("Enter major", text: $major)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                }
+                .padding(.horizontal, 40)
+
+                Spacer()
+
+                // MARK: - Save Button
+                Button(action: {
+                    onSave(name, bio, email, major, selectedImage)
+                    dismiss()
+                }) {
+                    Text("Save")
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color(red: 247/255, green: 121/255, blue: 141/255))
+                        .cornerRadius(12)
+                }
+                .padding(.horizontal, 40)
+                .padding(.bottom, 30)
             }
-            .padding(.horizontal, 40)
-
-            Spacer()
-
-            Button(action: {
-                onSave(name, bio, major, selectedImage)
-            }) {
-                Text("Save")
-                    .foregroundColor(.white)
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(Color(hex:0xF7798D))
-                    .cornerRadius(12)
-            }
-            .padding(.horizontal, 40)
-            .padding(.bottom, 30)
         }
         .photosPicker(isPresented: $showPhotoPicker, selection: $photoItem)
         .onChange(of: photoItem) { _, newItem in

@@ -14,9 +14,9 @@ enum TopTab {
 struct ContentView: View {
     
     @State private var selectedTab: TopTab = .profile
-    
+    @State private var userBio = "Hi, I'm Jack!"
     @State private var userName = "Jack Nguyen"
-    @State private var userBio = "hn365@cornell.edu"
+    @State private var userEmail = "hn365@cornell.edu"
     @State private var userMajor = "CS"
     @State private var userImage: UIImage? = nil
 
@@ -97,17 +97,18 @@ struct ContentView: View {
                         EditProfileView(
                             name: userName,
                             bio: userBio,
+                            email: userEmail,
                             major: userMajor,
-                            selectedImage: userImage,
-                            onSave: { newName, newBio, newMajor, newImage in
-                                userName = newName
-                                userBio = newBio
-                                userMajor = newMajor
-                                userImage = newImage
-                            }
-                        )
+                            selectedImage: userImage
+                        ) { newName, newBio, newEmail, newMajor, newImage in
+                            userName = newName
+                            userBio = newBio
+                            userEmail = newEmail
+                            userMajor = newMajor
+                            userImage = newImage
+                        }
                     } label: {
-                        Text("Edit profile")
+                        Text("Edit Profile")
                             .font(.system(size: 14))
                             .fontWeight(.bold)
                             .padding(.horizontal, 20)
@@ -116,6 +117,7 @@ struct ContentView: View {
                             .foregroundColor(.white)
                             .cornerRadius(14)
                     }
+
                 }
                 .padding(.top,20)
                 
