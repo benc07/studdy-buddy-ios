@@ -19,12 +19,12 @@ struct ContentView: View {
     @State private var userEmail = "hn365@cornell.edu"
     @State private var userMajor = "CS"
     @State private var userImage: UIImage? = nil
-
+    
     
     var body: some View {
         NavigationStack {
             VStack(spacing:0) {
-
+                
                 HStack {
                     Spacer()
                     
@@ -55,7 +55,7 @@ struct ContentView: View {
                 .padding(.top)
                 .padding(.bottom, 12)
                 
-
+                
                 HStack(spacing: 0) {
                     Rectangle()
                         .fill(selectedTab == .profile ? Color(hex:0xF7798D) : Color.gray.opacity(0.4))
@@ -68,7 +68,7 @@ struct ContentView: View {
                         .frame(maxWidth: .infinity)
                 }
                 
-
+                
                 ScrollView {
                     if selectedTab == .profile {
                         profileView
@@ -81,7 +81,7 @@ struct ContentView: View {
     }
     
     
-
+    
     var profileView: some View {
         VStack(alignment: .leading, spacing: 24) {
             
@@ -117,7 +117,7 @@ struct ContentView: View {
                             .foregroundColor(.white)
                             .cornerRadius(14)
                     }
-
+                    
                 }
                 .padding(.top,20)
                 
@@ -177,7 +177,7 @@ struct ContentView: View {
     }
     
     
-
+    
     var searchView: some View {
         VStack(spacing:20) {
             
@@ -197,7 +197,7 @@ struct ContentView: View {
             .background(Color.gray.opacity(0.4))
             .cornerRadius(30)
             .padding(.horizontal, 20)
-
+            
         }
         .padding(.top, 20)
     }

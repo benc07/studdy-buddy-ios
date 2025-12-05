@@ -32,11 +32,11 @@ struct EditProfileView: View {
                             .clipShape(Circle())
                             .onTapGesture { showPhotoPicker = true }
                     } else {
-                        Image(systemName: "person.circle.fill")
+                        Image("person")
                             .resizable()
-                            .scaledToFill()
+                            .scaledToFit()
                             .frame(width: 120, height: 120)
-                            .foregroundColor(.gray)
+                            .foregroundColor(.gray.opacity(0.7))
                             .onTapGesture { showPhotoPicker = true }
                     }
                 }
