@@ -6,12 +6,26 @@
 //
 
 import SwiftUI
+import GoogleSignIn
 
 @main
 struct HackChallengeApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
+
+    @State private var isLoggedIn: Bool = false
+
     var body: some Scene {
         WindowGroup {
-                ContentView()
+            Group {
+                if isLoggedIn {
+                    ContentView()
+                } else {
+                    LoginView(isLoggedIn: $isLoggedIn)
+                }
             }
+            .onOpenURL { url in
+                GIDSignIn.sharedInstance.handle(url)
+            }
+        }
     }
 }

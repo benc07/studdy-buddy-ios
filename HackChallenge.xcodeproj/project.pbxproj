@@ -7,17 +7,31 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8F86CFA62EE29AE800D2294B /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = 8F86CFA52EE29AE800D2294B /* GoogleSignIn */; };
+		8F86CFA82EE29AE800D2294B /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 8F86CFA72EE29AE800D2294B /* GoogleSignInSwift */; };
 		B8A7B7D02EE2957900836214 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = B8A7B7CF2EE2957900836214 /* Alamofire */; };
-		B8A7B7D22EE2957900836214 /* AlamofireDynamic in Frameworks */ = {isa = PBXBuildFile; productRef = B8A7B7D12EE2957900836214 /* AlamofireDynamic */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		B88A92CB2EDE8331001628EF /* HackChallenge.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HackChallenge.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		8F86CFAA2EE29B6600D2294B /* Exceptions for "HackChallenge" folder in "HackChallenge" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = B88A92CA2EDE8331001628EF /* HackChallenge */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		B88A92CD2EDE8331001628EF /* HackChallenge */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				8F86CFAA2EE29B6600D2294B /* Exceptions for "HackChallenge" folder in "HackChallenge" target */,
+			);
 			path = HackChallenge;
 			sourceTree = "<group>";
 		};
@@ -29,7 +43,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				B8A7B7D02EE2957900836214 /* Alamofire in Frameworks */,
-				B8A7B7D22EE2957900836214 /* AlamofireDynamic in Frameworks */,
+				8F86CFA62EE29AE800D2294B /* GoogleSignIn in Frameworks */,
+				8F86CFA82EE29AE800D2294B /* GoogleSignInSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -74,6 +89,8 @@
 			packageProductDependencies = (
 				B8A7B7CF2EE2957900836214 /* Alamofire */,
 				B8A7B7D12EE2957900836214 /* AlamofireDynamic */,
+				8F86CFA52EE29AE800D2294B /* GoogleSignIn */,
+				8F86CFA72EE29AE800D2294B /* GoogleSignInSwift */,
 			);
 			productName = HackChallenge;
 			productReference = B88A92CB2EDE8331001628EF /* HackChallenge.app */;
@@ -105,6 +122,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				B8A7B7CE2EE2957900836214 /* XCRemoteSwiftPackageReference "Alamofire" */,
+				8F86CFA42EE29AE800D2294B /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = B88A92CC2EDE8331001628EF /* Products */;
@@ -267,7 +285,8 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 3B3XKA728R;
 				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = HackChallenge/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -299,7 +318,8 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 3B3XKA728R;
 				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = HackChallenge/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -346,6 +366,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		8F86CFA42EE29AE800D2294B /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/google/GoogleSignIn-iOS";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 9.0.0;
+			};
+		};
 		B8A7B7CE2EE2957900836214 /* XCRemoteSwiftPackageReference "Alamofire" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Alamofire/Alamofire.git";
@@ -357,6 +385,16 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		8F86CFA52EE29AE800D2294B /* GoogleSignIn */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8F86CFA42EE29AE800D2294B /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignIn;
+		};
+		8F86CFA72EE29AE800D2294B /* GoogleSignInSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8F86CFA42EE29AE800D2294B /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignInSwift;
+		};
 		B8A7B7CF2EE2957900836214 /* Alamofire */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = B8A7B7CE2EE2957900836214 /* XCRemoteSwiftPackageReference "Alamofire" */;
