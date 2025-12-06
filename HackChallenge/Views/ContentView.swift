@@ -15,103 +15,130 @@ enum TopTab {
 struct ContentView: View {
     
     @State private var selectedTab: TopTab = .profile
-    @State private var userBio = "Hi, I'm Jack!"
-    @State private var userName = "Jack Nguyen"
-    @State private var userEmail = "hn365@cornell.edu"
-    @State private var userMajor = "CS"
+    @State private var userBio = "Hi, I'm Ben!"
+    @State private var userName = "Ben Chen"
+    @State private var userEmail = "bc679@cornell.edu"
+    @State private var userMajor = ""
     @State private var userImage: UIImage? = nil
     @State private var navigateToConnections = false
-    
+    @State private var searchCourse = ""
     @State private var showMenu = false
-
+    
+    let allStudents: [SearchStudent] = [
+        SearchStudent(id: 1, name: "Mr. Eggplant",
+                      email: "eggplant@cornell.edu",
+                      courses: ["CHEM 2070", "MATH 1110"]),
+        SearchStudent(id: 2, name: "Benjamin Chenjamin",
+                      email: "bc679@cornell.edu",
+                      courses: ["CHEM 2070", "BIO 1010"]),
+        SearchStudent(id: 3, name: "Walter White",
+                      email: "wwhite@cornell.edu",
+                      courses: ["CHEM 3570"])
+    ]
+    
+    // MARK: - BODY
+    
     var body: some View {
-        ZStack {
-
-            NavigationStack {
+        NavigationStack {
+            ZStack {
                 VStack(spacing: 0) {
                     
-                    // TOP BAR
-                    HStack {
-                        Button {
-                            showMenu = true
-                        } label: {
-                            Image("3 rows")
-                                .resizable()
-                                .frame(width: 20, height: 20)
-                                .padding(.leading, 15)
-                        }
-                        
-                        Button {
-                            selectedTab = .profile
-                        } label: {
-                            Image("person")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(height: 60)
-                                .foregroundColor(selectedTab == .profile ? Color(hex:0xF7798D) : Color(hex:0xC2C2C2))
-                                .padding(.leading, 30)
-                        }
-                        
-                        Spacer()
-                        
-                        Button {
-                            selectedTab = .search
-                        } label: {
-                            Image("search")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(height: 60)
-                                .foregroundColor(selectedTab == .search ? Color(hex:0xF7798D) : Color(hex:0xC2C2C2))
-                                .padding(.leading, 35)
-                        }
-                        
-                        Spacer()
-                    }
-                    .padding(.top)
-                    .padding(.bottom, 12)
+                    // TOP BAR + TABS
+                    topBar
                     
-                    // TAB BAR
-                    HStack(spacing: 0) {
-                        Rectangle()
-                            .fill(selectedTab == .profile ? Color(hex:0xF7798D) : Color.gray.opacity(0.4))
-                            .frame(height: 4)
-                            .frame(maxWidth: .infinity)
-                        
-                        Rectangle()
-                            .fill(selectedTab == .search ? Color(hex:0xF7798D) : Color.gray.opacity(0.4))
-                            .frame(height: 4)
-                            .frame(maxWidth: .infinity)
-                    }
-                    
-                    ScrollView {
-                        if selectedTab == .profile {
+                    // CONTENT
+                    if selectedTab == .profile {
+                        ScrollView {
                             profileView
-                        } else {
-                            searchView
                         }
+                    } else {
+                        searchView
                     }
                 }
-                .navigationDestination(isPresented: $navigateToConnections) {
-                    ConnectionsMainView()
+                
+                // SIDE MENU OVERLAY
+                if showMenu {
+                    SideMenuView(
+                        onClose: { showMenu = false },
+                        onNavigateConnections: {
+                            showMenu = false
+                            navigateToConnections = true
+                        }
+                    )
                 }
             }
-            if showMenu {
-                SideMenuView(
-                    onClose: { showMenu = false },
-                    onNavigateConnections: {
-                        showMenu = false
-                        navigateToConnections = true
-                    }
-                )
+            .navigationDestination(isPresented: $navigateToConnections) {
+                ConnectionsMainView()
             }
         }
+        .ignoresSafeArea(.keyboard, edges: .bottom)   // <- keyboard no longer moves layout
         .animation(.easeInOut, value: showMenu)
     }
+    
+    // MARK: - TOP BAR
+    
+    private var topBar: some View {
+        VStack(spacing: 0) {
+            HStack {
+                Button { showMenu = true } label: {
+                    Image("3 rows")
+                        .resizable()
+                        .frame(width: 20, height: 20)
+                        .padding(.leading, 15)
+                }
+                
+                Button { selectedTab = .profile } label: {
+                    Image("person")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(height: 60)
+                        .foregroundColor(
+                            selectedTab == .profile
+                            ? Color(hex:0xF7798D)
+                            : Color(hex:0xC2C2C2)
+                        )
+                        .padding(.leading, 30)
+                }
+                
+                Spacer()
+                
+                Button { selectedTab = .search } label: {
+                    Image("search")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(height: 60)
+                        .foregroundColor(
+                            selectedTab == .search
+                            ? Color(hex:0xF7798D)
+                            : Color(hex:0xC2C2C2)
+                        )
+                        .padding(.leading, 35)
+                }
+                
+                Spacer()
+            }
+            .padding(.top)
+            .padding(.bottom, 12)
+            
+            // TAB BAR
+            HStack(spacing: 0) {
+                Rectangle()
+                    .fill(selectedTab == .profile ? Color(hex:0xF7798D) : .gray.opacity(0.4))
+                    .frame(height: 4)
+                
+                Rectangle()
+                    .fill(selectedTab == .search ? Color(hex:0xF7798D) : .gray.opacity(0.4))
+                    .frame(height: 4)
+            }
+        }
+        .background(Color.white)   // pins this region; prevents visual jump
+    }
+    
+    // MARK: - PROFILE VIEW
+    
     var profileView: some View {
         VStack(alignment: .leading, spacing: 24) {
-            
             HStack(alignment: .top, spacing: 30) {
-                
                 VStack(spacing: 14) {
                     if let userImage {
                         Image(uiImage: userImage)
@@ -126,6 +153,7 @@ struct ContentView: View {
                             .frame(width: 100, height: 100)
                             .foregroundColor(.gray.opacity(0.7))
                     }
+                    
                     NavigationLink {
                         EditProfileView(
                             name: userName,
@@ -150,16 +178,13 @@ struct ContentView: View {
                             .foregroundColor(.white)
                             .cornerRadius(14)
                     }
-                    
                 }
-                .padding(.top,20)
+                .padding(.top, 20)
                 
                 VStack(alignment: .leading, spacing: 10) {
-                    HStack(spacing: 8) {
-                        Text(userName)
-                            .font(.system(size: 20))
-                            .fontWeight(.medium)
-                    }
+                    Text(userName)
+                        .font(.system(size: 20))
+                        .fontWeight(.medium)
                     
                     Text(userEmail)
                         .foregroundColor(.gray)
@@ -167,27 +192,15 @@ struct ContentView: View {
                     Text(userMajor)
                         .foregroundColor(.gray)
                 }
-
-                .padding(.top,20)
+                .padding(.top, 20)
             }
-            .frame(maxWidth: .infinity, alignment: .center)
+            .frame(maxWidth: .infinity)
             .padding(.horizontal, 30)
             
-//            Text("My schedule")
-//                .font(.system(size: 32, weight: .semibold))
-//                .padding(.horizontal)
-//
-//            RoundedRectangle(cornerRadius: 20)
-//                .stroke(Color.black, lineWidth: 3)
-//                .frame(height: 250)
-//                .padding(.horizontal,35)
-//                .overlay(
-//                    MyScheduleView()
-//                )
             MyScheduleView()
             
             NavigationLink {
-                ConnectionsMainView()
+                ClassSearchView()
             } label: {
                 Text("Add classes")
                     .font(.title3)
@@ -199,35 +212,94 @@ struct ContentView: View {
                     .cornerRadius(20)
                     .padding(.horizontal, 40)
             }
-            .padding(.top,35)
+            .padding(.top, 35)
             
             Spacer(minLength: 30)
         }
     }
     
+    // MARK: - SEARCH
+    
+    var filteredStudents: [SearchStudent] {
+        allStudents.filter { student in
+            guard !searchCourse.isEmpty else { return false }
+            return student.courses.contains { $0.localizedCaseInsensitiveContains(searchCourse) }
+        }
+    }
+    
     var searchView: some View {
-        VStack(spacing:20) {
-            
+        VStack(spacing: 0) {
+
+            // SEARCH BAR (fixed height)
             HStack {
                 Image(systemName: "magnifyingglass")
                     .foregroundColor(.white)
-                
-                Text("Enter course number")
+
+                TextField("Enter course number", text: $searchCourse)
                     .foregroundColor(.white)
-                
-                Spacer()
-                
-                Image(systemName: "line.3.horizontal")
-                    .foregroundColor(.white)
+                    .textInputAutocapitalization(.characters)
+
+                if !searchCourse.isEmpty {
+                    Button { searchCourse = "" } label: {
+                        Image(systemName: "xmark")
+                            .foregroundColor(.white)
+                    }
+                }
             }
             .padding()
             .background(Color.gray.opacity(0.4))
             .cornerRadius(30)
             .padding(.horizontal, 20)
-            
+            .padding(.top, 20)
+
+            // CONTENT SCROLLS → NO LAYOUT SHIFT
+            ScrollView {
+                VStack(spacing: 0) {
+
+                    let filtered = filteredStudents
+
+                    if searchCourse.isEmpty {
+                        Text("Search for a course to see students")
+                            .foregroundColor(.gray)
+                            .padding(.top, 30)
+                            .padding(.leading, 40)
+                    }
+                    else if filtered.isEmpty {
+                        Text("No students found")
+                            .foregroundColor(.gray)
+                            .padding(.top, 30)
+                    }
+                    else {
+                        ForEach(filtered) { student in
+                            HStack {
+                                Circle()
+                                    .fill(Color(hex: 0xF7AFC2))
+                                    .frame(width: 50, height: 50)
+                                    .overlay(Text(student.name.prefix(1)))
+
+                                VStack(alignment: .leading) {
+                                    Text(student.name)
+                                        .font(.headline)
+                                    Text(student.email)
+                                        .font(.caption)
+                                        .foregroundColor(.gray)
+                                }
+                                Spacer()
+                            }
+                            .padding(.horizontal, 20)
+                            .padding(.vertical, 8)
+
+                            Divider()
+                                .padding(.leading, 20)
+                        }
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .padding(.top, 10)
         }
-        .padding(.top, 20)
     }
+
 }
 
 #Preview {

@@ -29,3 +29,10 @@ struct Friendship: nonisolated Decodable, Identifiable {
     let friend_id: Int
     let status: String
 }
+
+struct SearchStudent: Identifiable {
+    let id: Int
+    let name: String
+    let email: String
+    let courses: [String]
+}

@@ -7,12 +7,26 @@
 
 import SwiftUI
 
+// MARK: - MAIN SCREEN
+
 struct ConnectionsMainView: View {
     @State private var selectedTab = 0
     
+    @State private var connections: [UserConnection] = [
+        UserConnection(id: 1, name: "Mr. Eggplant", email: "eggplant@cornell.edu")
+    ]
+    
+    @State private var requests: [UserConnection] = [
+        UserConnection(id: 3, name: "John Smith", email: "jsmith@cornell.edu")
+    ]
+    
+    @State private var outgoing: [UserConnection] = [
+        UserConnection(id: 4, name: "Gojo Satoru", email: "purple@cornell.edu")
+    ]
+    
     var body: some View {
         VStack(spacing: 0) {
-            // Top segmented bar
+            
             HStack {
                 SegmentButton(title: "Connections", index: 0, selected: $selectedTab)
                 SegmentButton(title: "Requests", index: 1, selected: $selectedTab)
@@ -23,19 +37,26 @@ struct ConnectionsMainView: View {
             
             Divider()
             
-            // Content
             if selectedTab == 0 {
-                ConnectionsView()
-            } else if selectedTab == 1 {
-                RequestsView()
-            } else {
-                RequestedView()
+                ConnectionsView(connections: $connections)
+            }
+            else if selectedTab == 1 {
+                RequestsView(
+                    requests: $requests,
+                    connections: $connections,
+                    setTab: { selectedTab = $0 }
+                )
+            }
+            else {
+                RequestedView(outgoing: $outgoing)
             }
         }
         .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
     }
 }
+
+// MARK: - SEGMENT BUTTON
 
 struct SegmentButton: View {
     let title: String
@@ -60,19 +81,17 @@ struct SegmentButton: View {
     }
 }
 
+// MARK: - CONNECTIONS VIEW
+
 struct ConnectionsView: View {
+    @Binding var connections: [UserConnection]
+    
     @State private var searchText = ""
-    
-    @State private var connections: [UserConnection] = [
-        UserConnection(id: 1, name: "Mr. Eggplant", email: "eggplant@cornell.edu"),
-        UserConnection(id: 2, name: "Walter White", email: "abcdefg@cornell.edu")
-    ]
-    
     @State private var toRemove: UserConnection? = nil
     
     var body: some View {
         VStack {
-            // Search bar
+            
             HStack {
                 Image(systemName: "magnifyingglass").foregroundColor(.white)
                 TextField("Search", text: $searchText)
@@ -90,7 +109,6 @@ struct ConnectionsView: View {
             .padding(.horizontal, 20)
             .padding(.top, 16)
             
-            // Filtered connections
             let filtered = connections.filter {
                 searchText.isEmpty ||
                 $0.name.localizedCaseInsensitiveContains(searchText)
@@ -110,11 +128,8 @@ struct ConnectionsView: View {
                             .overlay(Text(user.name.prefix(1)))
                         
                         VStack(alignment: .leading) {
-                            Text(user.name)
-                                .font(.headline)
-                            Text(user.email)
-                                .font(.caption)
-                                .foregroundColor(.gray)
+                            Text(user.name).font(.headline)
+                            Text(user.email).font(.caption).foregroundColor(.gray)
                         }
                         
                         Spacer()
@@ -135,6 +150,7 @@ struct ConnectionsView: View {
         .overlay(removePopup)
     }
     
+    // MARK: - POPUP
     @ViewBuilder
     var removePopup: some View {
         if let user = toRemove {
@@ -182,17 +198,13 @@ struct ConnectionsView: View {
     }
 }
 
-struct UserConnection: Identifiable {
-    let id: Int
-    let name: String
-    let email: String
-}
+// MARK: - REQUESTS VIEW
 
 struct RequestsView: View {
-    @State private var requests: [UserConnection] = [
-        UserConnection(id: 3, name: "John Smith", email: "jsmith@cornell.edu"),
-        UserConnection(id: 4, name: "Gojo Satoru", email: "halfman@cornell.edu")
-    ]
+    @Binding var requests: [UserConnection]
+    @Binding var connections: [UserConnection]
+    
+    var setTab: (Int) -> Void
     
     var body: some View {
         List {
@@ -212,6 +224,8 @@ struct RequestsView: View {
                     
                     Button("Accept") {
                         requests.removeAll { $0.id == user.id }
+                        connections.append(user)
+                        setTab(0)
                     }
                     .padding(6)
                     .background(Color.green.opacity(0.5))
@@ -231,10 +245,10 @@ struct RequestsView: View {
     }
 }
 
+// MARK: - REQUESTED OUTGOING VIEW
+
 struct RequestedView: View {
-    @State private var outgoing: [UserConnection] = [
-        UserConnection(id: 5, name: "Professor Bean", email: "bean@cornell.edu")
-    ]
+    @Binding var outgoing: [UserConnection]
     
     var body: some View {
         List {
@@ -261,4 +275,12 @@ struct RequestedView: View {
         }
         .listStyle(.plain)
     }
+}
+
+// MARK: - USER MODEL
+
+struct UserConnection: Identifiable {
+    let id: Int
+    let name: String
+    let email: String
 }
