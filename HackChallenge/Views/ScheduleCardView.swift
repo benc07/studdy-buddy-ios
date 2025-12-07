@@ -13,33 +13,51 @@ struct ScheduleCardView: View {
 
     var body: some View {
         HStack(spacing: 16) {
-
+            
             Image("chem")
                 .resizable()
                 .scaledToFit()
                 .frame(width: 60, height: 60)
-
+            
             VStack(alignment: .leading, spacing: 5) {
-
+                
                 HStack(spacing: 6) {
                     Text("\(courseName)-\(session.name)")
                         .font(.system(size: 16, weight: .semibold))
                         .foregroundColor(Color(hex:0x777777))
                 }
-
+                
                 Text(session.time)
                     .font(.system(size: 13))
                     .foregroundColor(Color(hex:0xC2C2C2))
-
             }
-
+            
+            Spacer()
+            
+            /// DELETE BUTTON
+            VStack{
+                Spacer()
+                Button(action: {
+                    ScheduleManager.shared.remove(sessionID: session.id)
+                }) {
+                    ZStack {
+                        Circle()
+                            .fill(Color.red)
+                            .frame(width: 15, height: 15)
+                        
+                        Rectangle()
+                            .fill(Color.white)
+                            .frame(width: 10, height: 2)
+                    }
+                }
             }
-        .padding(.top,10)
+        }
+        .padding(.top, 10)
     }
 }
 
 #Preview {
-    SessionCardView(
+    ScheduleCardView(
         session: Session(
             id: 1,
             class_number: "9712",

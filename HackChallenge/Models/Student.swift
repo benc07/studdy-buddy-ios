@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Combine
 
 struct Student: Codable, Identifiable {
     let id: Int
@@ -13,15 +14,15 @@ struct Student: Codable, Identifiable {
 }
 
 struct User: nonisolated Decodable, Identifiable {
-    let id: Int                         // "id": 1
-    let google_id: String               // "google_id": "1107..."
-    let name: String                    // "name": "Olivia Yu"
-    let email: String                   // "email": "qy265@cornell.edu"
-    let profile_picture: String         // "profile_picture": ""
-    let major: String                   // "major": ""
-    let interests: String               // "interests": ""
-    let sessions: [Session]             // "sessions": []
-    let friendships: [Friendship]       // "friendships": []
+    let id: Int
+    let google_id: String
+    let name: String
+    let email: String
+    let profile_picture: String?
+    let major: Major?
+    let interests: [Interest]
+    let sessions: [SessionSummary]
+    let friendships: [Friendship]
 }
 
 struct Friendship: nonisolated Decodable, Identifiable {
@@ -35,4 +36,54 @@ struct SearchStudent: Identifiable {
     let name: String
     let email: String
     let courses: [String]
+}
+
+struct Major: Codable {
+    let id: Int
+    let major: String
+}
+
+struct Interest: Codable {
+    let id: Int?
+    let name: String
+    let category_id: Int?
+}
+
+struct SessionSummary: Codable {
+    let id: Int
+    let class_number: String
+    let name: String
+    let time: String
+}
+
+struct InterestInput: Encodable {
+    let name: String
+    let category: String
+}
+
+class CurrentUser: ObservableObject {
+
+    static let shared = CurrentUser()
+
+    private init() {}
+
+    @Published var user: User?
+}
+
+struct ScheduleCourseSummary: Codable {
+    let id: Int
+    let code: String
+    let name: String
+}
+
+struct ScheduleSession: Codable, Identifiable {
+    let id: Int
+    let class_number: String
+    let name: String
+    let time: String
+    let course: ScheduleCourseSummary
+}
+
+struct ScheduleResponse: nonisolated Decodable {
+    let sessions: [ScheduleSession]
 }

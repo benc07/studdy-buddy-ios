@@ -32,12 +32,16 @@ struct MyScheduleView: View {
                             }
 
                         }
+                        .padding()
                     }
                 )
 
             Spacer()
         }
         .padding(.horizontal,40)
+        .onAppear {
+            schedule.loadSchedule()
+        }
     }
 }
 

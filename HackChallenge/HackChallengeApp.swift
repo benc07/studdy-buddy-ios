@@ -5,6 +5,8 @@
 //  Created by Nguyen Huu An Khang  on 12/1/25.
 //
 
+
+
 import SwiftUI
 import GoogleSignIn
 
@@ -22,7 +24,7 @@ struct HackChallengeApp: App {
                     LoginView(isLoggedIn: $isLoggedIn)
 
                 } else if !didCompleteOnboarding {
-                    WelcomeFlowView(didCompleteOnboarding: $didCompleteOnboarding)
+                    OnboardingFlowView(didCompleteOnboarding: $didCompleteOnboarding)
 
                 } else {
                     ContentView()

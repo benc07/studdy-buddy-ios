@@ -12,7 +12,8 @@ class NetworkManager {
     static let shared = NetworkManager()
     private init() {}
 
-    private let baseURL = "http://10.49.85.198:8000"
+//    private let baseURL = "http://10.49.85.198:8000"
+    private let baseURL = "http://34.186.121.250:8000"
 }
 
 extension NetworkManager {
@@ -89,13 +90,70 @@ extension NetworkManager {
     }
 }
 
+
+
 extension NetworkManager {
-    func addSessionToUser(userID: Int, sessionID: Int, completion: @escaping (User?) -> Void) {
-        let url = "\(baseURL)/users/\(userID)/schedule/"
+    func googleLogin(tokenID: String, completion: @escaping (User?) -> Void) {
+        let url = "\(baseURL)/auth/google"
         
-        let params = ["session_id": sessionID]
+        let params: [String: Any] = [
+            "token_id": tokenID
+        ]
 
         AF.request(url, method: .post, parameters: params, encoding: JSONEncoding.default)
+            .validate()
+            .responseDecodable(of: User.self) { response in
+                switch response.result {
+                case .success(let user):
+                    print("Backend returned user:", user)
+                    completion(user)
+                case .failure(let error):
+                    print("Google backend login failed:", error)
+                    completion(nil)
+                }
+            }
+    }
+}
+
+extension NetworkManager {
+    func updateUser(
+        userID: Int,
+        major: String,
+        interests: [InterestInput],
+        completion: @escaping (User?) -> Void
+    ) {
+        let url = "\(baseURL)/users/\(userID)/"
+
+        let profilePic = CurrentUser.shared.user?.profile_picture ?? ""
+
+        let params: [String: Any] = [
+            "major": major,
+            "profile_picture": profilePic,
+            "interests": interests.map { ["name": $0.name, "category": $0.category] }
+        ]
+
+        print("Sending Update User JSON:", params)
+
+        AF.request(url, method: .post, parameters: params, encoding: JSONEncoding.default)
+            .validate()
+            .responseDecodable(of: User.self) { response in
+                switch response.result {
+                case .success(let updatedUser):
+                    completion(updatedUser)
+                case .failure(let error):
+                    print("Update user failed:", error)
+                    completion(nil)
+                }
+            }
+    }
+}
+
+extension NetworkManager {
+    
+    func addSessionToUser(userID: Int, sessionID: Int, completion: @escaping (User?) -> Void) {
+        let url = "\(baseURL)/users/\(userID)/schedule/\(sessionID)/"
+
+        AF.request(url, method: .post)
             .validate()
             .responseDecodable(of: User.self) { response in
                 switch response.result {
@@ -103,6 +161,38 @@ extension NetworkManager {
                     completion(user)
                 case .failure(let error):
                     print("Error adding session:", error)
+                    completion(nil)
+                }
+            }
+    }
+    
+    func getUserSchedule(userID: Int, completion: @escaping (ScheduleResponse) -> Void) {
+        let url = "\(baseURL)/users/\(userID)/schedule/"
+
+            AF.request(url)
+                .validate()
+                .responseDecodable(of: ScheduleResponse.self) { response in
+                    switch response.result {
+                    case .success(let data):
+                        completion(data)
+                    case .failure(let error):
+                        print("Failed to load schedule:", error)
+                    }
+                }
+        }
+    
+    func deleteSessionFromUser(userID: Int, sessionID: Int, completion: @escaping (User?) -> Void) {
+
+        let url = "\(baseURL)/users/\(userID)/schedule/\(sessionID)/"
+
+        AF.request(url, method: .delete)
+            .validate()
+            .responseDecodable(of: User.self) { response in
+                switch response.result {
+                case .success(let updatedUser):
+                    completion(updatedUser)
+                case .failure(let error):
+                    print("❌ Failed to delete session:", error)
                     completion(nil)
                 }
             }

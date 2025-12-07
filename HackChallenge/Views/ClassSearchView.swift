@@ -28,7 +28,7 @@ struct ClassSearchView: View {
             if query.isEmpty { return true }
             let q = query.lowercased()
 
-            return course.code.lowercased().hasPrefix(q) 
+            return course.code.lowercased().contains(q)
         }
     }
     

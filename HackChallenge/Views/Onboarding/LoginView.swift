@@ -4,6 +4,8 @@
 //
 //  Created by Ben Chen on 12/4/25.
 //
+//
+
 
 import SwiftUI
 import GoogleSignIn
@@ -28,8 +30,7 @@ struct LoginView: View {
                 .resizable()
                 .scaledToFill()
 
-            Spacer()
-                .frame(height: 20)
+            Spacer().frame(height: 20)
 
             Button(action: {
                 performGoogleLogin()
@@ -51,8 +52,7 @@ struct LoginView: View {
                 .padding(.horizontal, 40)
             }
 
-            Spacer()
-                .frame(height: 40)
+            Spacer().frame(height: 40)
         }
         .background(
             LinearGradient(
@@ -68,6 +68,7 @@ struct LoginView: View {
         .ignoresSafeArea()
     }
 
+
     func performGoogleLogin() {
 
         guard let rootViewController = UIApplication
@@ -78,26 +79,47 @@ struct LoginView: View {
             .first(where: { $0.isKeyWindow })?
             .rootViewController
         else {
-            print("❌ No root view controller found")
+            print("No root view controller found")
             return
         }
 
         GIDSignIn.sharedInstance.signIn(withPresenting: rootViewController) { result, error in
 
             if let error = error {
-                print("❌ Google Sign-In error: \(error.localizedDescription)")
+                print("Google Sign-In error:", error.localizedDescription)
                 return
             }
 
-            guard let user = result?.user else {
-                print("❌ No user object returned")
+            guard let googleUser = result?.user else {
+                print("Google returned no user")
                 return
             }
 
-            print("✅ Signed in as:", user.profile?.name ?? "Unknown")
-            isLoggedIn = true
+            guard let idToken = googleUser.idToken?.tokenString else {
+                print("Could not extract ID token from Google")
+                return
+            }
+
+            print("Google ID token:", idToken)
+
+            NetworkManager.shared.googleLogin(tokenID: idToken) { backendUser in
+                if let backendUser = backendUser {
+
+                    print("Backend login success for:", backendUser.name)
+
+                    CurrentUser.shared.user = backendUser
+
+                    isLoggedIn = true
+                } else {
+                    print("Backend login failed")
+                }
+            }
         }
     }
+}
+
+#Preview {
+    LoginView(isLoggedIn: .constant(false))
 }
 
 #Preview {
