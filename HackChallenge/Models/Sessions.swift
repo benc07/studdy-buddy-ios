@@ -7,13 +7,12 @@
 
 import Foundation
 
-struct Session: nonisolated Decodable, Identifiable {
+struct Session: nonisolated Codable, Identifiable {
     let id: Int
     let class_number: String
     let name: String
     let time: String
 }
-
 
 struct SessionSummary: Codable {
     let id: Int

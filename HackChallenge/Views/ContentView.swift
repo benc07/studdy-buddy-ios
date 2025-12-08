@@ -30,8 +30,11 @@ struct ContentView: View {
     @State private var searchCourse = ""
     @State private var showMenu = false
 
-    // MARK: - Dynamic Students (removed hardcoded array)
-    @State private var allStudents: [SearchStudent] = []
+    // MARK: - Search / Matching State (backend powered)
+    @State private var matchedStudents: [MatchStudent] = []
+    @State private var isSearching = false
+    @State private var searchError: String? = nil
+    @State private var lastMatchedCourse: CourseSummary? = nil
 
     // MARK: - Init loads initial user data if exists
     init(isLoggedIn: Binding<Bool>, didCompleteOnboarding: Binding<Bool>) {
@@ -74,6 +77,7 @@ struct ContentView: View {
                             showMenu = false
                             isLoggedIn = false
                             didCompleteOnboarding = false
+                            CurrentUser.shared.logout()
                         }
                     )
                 }
@@ -84,12 +88,9 @@ struct ContentView: View {
         }
         .ignoresSafeArea(.keyboard, edges: .bottom)
         .animation(.easeInOut, value: showMenu)
-
         .onAppear {
             refreshUserFromCurrentUser()
-            loadStudents()   // 🔥 NEW: fetch from backend
         }
-
         .onReceive(CurrentUser.shared.$user) { newUser in
             guard let user = newUser else { return }
             userName = user.name
@@ -98,13 +99,6 @@ struct ContentView: View {
             if let image = CurrentUser.shared.profileImage(for: user.id) {
                 userImage = image
             }
-        }
-    }
-
-    // MARK: - Backend Fetch
-    private func loadStudents() {
-        NetworkManager.shared.getAllStudents { students in
-            self.allStudents = students
         }
     }
 
@@ -266,13 +260,48 @@ struct ContentView: View {
         }
     }
 
-    // MARK: - Student Search
-    var filteredStudents: [SearchStudent] {
-        allStudents.filter { student in
-            guard !searchCourse.isEmpty else { return false }
-            return student.courses.contains { $0.localizedCaseInsensitiveContains(searchCourse) }
+    // MARK: - Search + Match Logic
+
+    private func searchAndMatch() {
+        let trimmed = searchCourse.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard trimmed.count >= 3 else { return }
+        guard let userID = CurrentUser.shared.user?.id else {
+            searchError = "You must be logged in to search."
+            return
+        }
+
+        isSearching = true
+        searchError = nil
+        matchedStudents = []
+        lastMatchedCourse = nil
+
+        NetworkManager.shared.searchCourses(query: trimmed) { courses in
+            guard let firstCourse = courses.first else {
+                DispatchQueue.main.async {
+                    self.isSearching = false
+                    self.searchError = "No courses found matching \"\(trimmed)\"."
+                }
+                return
+            }
+
+            DispatchQueue.main.async {
+                self.lastMatchedCourse = firstCourse
+            }
+
+            NetworkManager.shared.matchBuddy(userID: userID, courseCode: firstCourse.code) { results in
+                DispatchQueue.main.async {
+                    self.isSearching = false
+                    self.matchedStudents = results.map { $0.student }
+
+                    if self.matchedStudents.isEmpty {
+                        self.searchError = "No students found for \(firstCourse.code)."
+                    }
+                }
+            }
         }
     }
+
+    // MARK: - Student Search View
 
     var searchView: some View {
         VStack(spacing: 0) {
@@ -283,9 +312,19 @@ struct ContentView: View {
                 TextField("Enter course number", text: $searchCourse)
                     .foregroundColor(.white)
                     .textInputAutocapitalization(.characters)
+                    .onSubmit {
+                        if searchCourse.count >= 3 {
+                            searchAndMatch()
+                        }
+                    }
 
                 if !searchCourse.isEmpty {
-                    Button { searchCourse = "" } label: {
+                    Button {
+                        searchCourse = ""
+                        matchedStudents = []
+                        searchError = nil
+                        lastMatchedCourse = nil
+                    } label: {
                         Image(systemName: "xmark")
                             .foregroundColor(.white)
                     }
@@ -296,26 +335,50 @@ struct ContentView: View {
             .cornerRadius(30)
             .padding(.horizontal, 20)
             .padding(.top, 20)
+            .onChange(of: searchCourse) { newValue in
+                if newValue.count >= 3 {
+                    searchAndMatch()
+                } else {
+                    matchedStudents = []
+                    searchError = nil
+                    lastMatchedCourse = nil
+                }
+            }
 
             ScrollView {
-                VStack(spacing: 0) {
-
-                    let filtered = filteredStudents
-
-                    if searchCourse.isEmpty {
-                        Text("Search for a course to see students")
-                            .foregroundColor(.gray)
-                            .padding(.top, 30)
-                            .padding(.leading, 40)
-                    }
-                    else if filtered.isEmpty {
-                        Text("No students found")
+                VStack(alignment: .leading, spacing: 12) {
+                    if searchCourse.count < 3 {
+                        Text("Type 3 characters to search for a course.")
                             .foregroundColor(.gray)
                             .padding(.top, 30)
                             .padding(.leading, 30)
-                    }
-                    else {
-                        ForEach(filtered) { student in
+                    } else if isSearching {
+                        HStack {
+                            ProgressView()
+                            Text("Searching for courses and matches...")
+                        }
+                        .padding(.top, 30)
+                        .padding(.leading, 30)
+                    } else if let error = searchError {
+                        Text(error)
+                            .foregroundColor(.gray)
+                            .padding(.top, 30)
+                            .padding(.leading, 30)
+                    } else if matchedStudents.isEmpty {
+                        Text("No matching students found.")
+                            .foregroundColor(.gray)
+                            .padding(.top, 30)
+                            .padding(.leading, 30)
+                    } else {
+                        if let course = lastMatchedCourse {
+                            Text("Matches for \(course.code) – \(course.name)")
+                                .font(.subheadline)
+                                .foregroundColor(.gray)
+                                .padding(.top, 20)
+                                .padding(.leading, 20)
+                        }
+
+                        ForEach(matchedStudents) { student in
                             HStack {
                                 Circle()
                                     .fill(Color(hex: 0xF7AFC2))

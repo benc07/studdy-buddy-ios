@@ -15,6 +15,8 @@ struct HackChallengeApp: App {
     @State private var isLoggedIn: Bool = false
     @State private var didCompleteOnboarding: Bool = false
 
+    @StateObject private var currentUser = CurrentUser.shared
+
     var body: some Scene {
         WindowGroup {
             Group {
@@ -33,6 +35,10 @@ struct HackChallengeApp: App {
             }
             .onOpenURL { url in
                 GIDSignIn.sharedInstance.handle(url)
+            }
+            .onReceive(currentUser.$user) { user in
+                guard let user = user else { return }
+                didCompleteOnboarding = !user.needsOnboarding
             }
         }
     }

@@ -14,18 +14,6 @@ struct Student: Codable, Identifiable {
     let name: String
 }
 
-struct User: nonisolated Decodable, Identifiable {
-    let id: Int
-    let google_id: String
-    let name: String
-    let email: String
-    let profile_picture: String?
-    let major: Major?
-    let interests: [Interest]
-    let sessions: [SessionSummary]
-    let friendships: [Friendship]
-}
-
 struct Friend: nonisolated Decodable, Identifiable {
     let id: Int
     let name: String
@@ -36,7 +24,7 @@ struct FriendListResponse: nonisolated Decodable {
     let friends: [Friend]
 }
 
-struct Friendship: nonisolated Decodable, Identifiable {
+struct Friendship: nonisolated Codable, Identifiable {
     var id: Int { friend_id }
     let friend_id: Int
     let status: String
@@ -69,81 +57,26 @@ struct InterestInput: Encodable {
     let category: String
 }
 
-class CurrentUser: ObservableObject {
-
-    static let shared = CurrentUser()
-    private init() {}
-
-    @Published var user: User?
-
-    private var profileImageCache: [Int: UIImage] = [:]
-
-    private func profileImageURL(for userID: Int) -> URL? {
-        let fm = FileManager.default
-        do {
-            let docs = try fm.url(
-                for: .documentDirectory,
-                in: .userDomainMask,
-                appropriateFor: nil,
-                create: true
-            )
-            return docs.appendingPathComponent("profile_\(userID).jpg")
-        } catch {
-            print("❌ Failed to get documents directory:", error)
-            return nil
-        }
-    }
-
-    func profileImage(for userID: Int) -> UIImage? {
-        if let cached = profileImageCache[userID] {
-            return cached
-        }
-
-        guard let url = profileImageURL(for: userID),
-              FileManager.default.fileExists(atPath: url.path) else {
-            return nil
-        }
-
-        do {
-            let data = try Data(contentsOf: url)
-            if let image = UIImage(data: data) {
-                profileImageCache[userID] = image
-                return image
-            }
-        } catch {
-            print("❌ Failed to load profile image from disk:", error)
-        }
-
-        return nil
-    }
-
-    func setProfileImage(_ image: UIImage?, for userID: Int) {
-        profileImageCache[userID] = image
-
-        guard let url = profileImageURL(for: userID) else { return }
-        let fm = FileManager.default
-
-        guard let image = image else {
-            do {
-                if fm.fileExists(atPath: url.path) {
-                    try fm.removeItem(at: url)
-                }
-            } catch {
-                print("❌ Failed to remove profile image from disk:", error)
-            }
-            return
-        }
-
-        if let data = image.jpegData(compressionQuality: 0.9) ?? image.pngData() {
-            do {
-                try data.write(to: url, options: .atomic)
-            } catch {
-                print("❌ Failed to write profile image to disk:", error)
-            }
-        }
-    }
-}
-
 struct ScheduleResponse: nonisolated Decodable {
     let sessions: [ScheduleSession]
+}
+
+// MARK: - Matching Models
+
+/// A matched student from the /users/<id>/match/ endpoint
+struct MatchStudent: nonisolated Decodable, Identifiable {
+    let id: Int
+    let name: String
+    let email: String
+}
+
+/// A single match result with score
+struct MatchResult: nonisolated Decodable {
+    let student: MatchStudent
+    let score: Int
+}
+
+/// Wrapper for all matches from /match/
+struct MatchResponse: nonisolated Decodable {
+    let matches: [MatchResult]
 }

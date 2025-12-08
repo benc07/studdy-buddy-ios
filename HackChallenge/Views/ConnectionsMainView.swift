@@ -304,7 +304,6 @@ struct RequestedView: View {
     }
 }
 
-
 // MARK: - USER MODEL
 struct UserConnection: Identifiable, Hashable, Codable {
     var id: Int

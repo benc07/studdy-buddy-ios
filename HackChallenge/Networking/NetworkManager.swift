@@ -12,9 +12,11 @@ class NetworkManager {
     static let shared = NetworkManager()
     private init() {}
 
-//    private let baseURL = "http://10.49.85.198:8000"
+    //    private let baseURL = "http://10.49.85.198:8000"
     private let baseURL = "http://34.186.121.250:8000"
 }
+
+// MARK: - COURSES
 
 extension NetworkManager {
     func getCourse(id: Int, completion: @escaping (Course?) -> Void) {
@@ -48,7 +50,36 @@ extension NetworkManager {
                 }
             }
     }
+
+    /// Search courses via /courses/search/?q=
+    func searchCourses(query: String, completion: @escaping ([CourseSummary]) -> Void) {
+        guard !query.isEmpty else {
+            completion([])
+            return
+        }
+
+        guard let encoded = query.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
+            completion([])
+            return
+        }
+
+        let url = "\(baseURL)/courses/search/?q=\(encoded)"
+
+        AF.request(url)
+            .validate()
+            .responseDecodable(of: CourseSearchResponse.self) { response in
+                switch response.result {
+                case .success(let data):
+                    completion(data.courses)
+                case .failure(let error):
+                    print("Failed to search courses:", error)
+                    completion([])
+                }
+            }
+    }
 }
+
+// MARK: - SESSIONS
 
 extension NetworkManager {
     func getSessions(sessionIDs: [Int], completion: @escaping ([Session]) -> Void) {
@@ -90,6 +121,8 @@ extension NetworkManager {
     }
 }
 
+// MARK: - AUTH
+
 extension NetworkManager {
     func googleLogin(tokenID: String, completion: @escaping (User?) -> Void) {
         let url = "\(baseURL)/auth/google"
@@ -112,6 +145,8 @@ extension NetworkManager {
             }
     }
 }
+
+// MARK: - USER PROFILE
 
 extension NetworkManager {
     func updateUser(
@@ -146,6 +181,8 @@ extension NetworkManager {
     }
 }
 
+// MARK: - USER SCHEDULE
+
 extension NetworkManager {
     func addSessionToUser(userID: Int, sessionID: Int, completion: @escaping (User?) -> Void) {
         let url = "\(baseURL)/users/\(userID)/schedule/\(sessionID)/"
@@ -166,20 +203,19 @@ extension NetworkManager {
     func getUserSchedule(userID: Int, completion: @escaping (ScheduleResponse) -> Void) {
         let url = "\(baseURL)/users/\(userID)/schedule/"
 
-            AF.request(url)
-                .validate()
-                .responseDecodable(of: ScheduleResponse.self) { response in
-                    switch response.result {
-                    case .success(let data):
-                        completion(data)
-                    case .failure(let error):
-                        print("Failed to load schedule:", error)
-                    }
+        AF.request(url)
+            .validate()
+            .responseDecodable(of: ScheduleResponse.self) { response in
+                switch response.result {
+                case .success(let data):
+                    completion(data)
+                case .failure(let error):
+                    print("Failed to load schedule:", error)
                 }
-        }
+            }
+    }
     
     func deleteSessionFromUser(userID: Int, sessionID: Int, completion: @escaping (User?) -> Void) {
-
         let url = "\(baseURL)/users/\(userID)/schedule/\(sessionID)/"
 
         AF.request(url, method: .delete)
@@ -277,6 +313,8 @@ extension NetworkManager {
     }
 }
 
+// MARK: - STUDENT LISTS / MATCHING
+
 extension NetworkManager {
 
     func getAllStudents(completion: @escaping ([SearchStudent]) -> Void) {
@@ -290,6 +328,35 @@ extension NetworkManager {
                     completion(data.students)
                 case .failure(let error):
                     print("Failed to load students:", error)
+                    completion([])
+                }
+            }
+    }
+
+    /// POST /users/<user_id>/match/
+    func matchBuddy(
+        userID: Int,
+        courseCode: String,
+        sessionIDs: [Int]? = nil,
+        completion: @escaping ([MatchResult]) -> Void
+    ) {
+        let url = "\(baseURL)/users/\(userID)/match/"
+
+        var params: [String: Any] = [
+            "course_code": courseCode
+        ]
+        if let sessionIDs, !sessionIDs.isEmpty {
+            params["session_ids"] = sessionIDs
+        }
+
+        AF.request(url, method: .post, parameters: params, encoding: JSONEncoding.default)
+            .validate()
+            .responseDecodable(of: MatchResponse.self) { response in
+                switch response.result {
+                case .success(let data):
+                    completion(data.matches)
+                case .failure(let error):
+                    print("Failed to match buddy:", error)
                     completion([])
                 }
             }
