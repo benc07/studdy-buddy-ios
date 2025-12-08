@@ -14,7 +14,6 @@ struct Course: nonisolated Decodable, Identifiable {
     let sessions: [Session]?
 }
 
-// Used only for GET all courses (because top-level is { "courses": [...] })
 struct CourseListResponse: nonisolated Decodable {
     let courses: [Course]
 }
@@ -56,10 +55,9 @@ let sampleCourses: [Course] = [
         id: 4,
         code: "MATH2210",
         name: "Linear Algebra",
-        sessions: nil   // ❗Example course with no sessions loaded
+        sessions: nil
     )
 ]
-
 
 let sampleSessions: [Session] = [
     Session(id: 1, class_number: "9709", name: "LEC001", time: "MW 10:10AM"),

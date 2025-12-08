@@ -5,8 +5,6 @@
 //  Created by Ben Chen on 12/5/25.
 //
 
-
-
 import SwiftUI
 import PhotosUI
 
@@ -50,10 +48,6 @@ let categories_list: [String: [String]] = [
     "Tech": ["Programming", "Robotics", "Astronomy", "AI", "Electronics"]
 ]
 
-// ------------------------
-// MARK: - ENTRY POINT
-// ------------------------
-
 struct OnboardingFlowView: View {
     @Binding var didCompleteOnboarding: Bool
     @State private var profileImage: UIImage? = nil
@@ -67,8 +61,6 @@ struct OnboardingFlowView: View {
         }
     }
 }
-
-
 
 struct ProfilePhotoScreen: View {
 
@@ -238,8 +230,6 @@ struct MajorSelectionScreen: View {
     }
 }
 
-
-
 struct InterestCategoryScreen: View {
 
     var profileImage: UIImage?
@@ -331,7 +321,6 @@ struct InterestCategoryScreen: View {
         return "Unknown"
     }
 
-    // Update user in backend
     func submitUpdatedUser() {
         guard let user = CurrentUser.shared.user else {
             print("No logged-in user stored")
@@ -391,8 +380,6 @@ struct InterestCategoryScreen: View {
     }
 }
 
-
-
 struct PinkNextButton: View {
     var text: String
 
@@ -417,7 +404,6 @@ extension Color {
         )
     }
 }
-
 
 #Preview {
     OnboardingFlowView(didCompleteOnboarding: .constant(false))

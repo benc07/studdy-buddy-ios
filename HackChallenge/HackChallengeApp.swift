@@ -2,10 +2,8 @@
 //  HackChallengeApp.swift
 //  HackChallenge
 //
-//  Created by Nguyen Huu An Khang  on 12/1/25.
+//  Created by Nguyen Huu An Khang on 12/1/25.
 //
-
-
 
 import SwiftUI
 import GoogleSignIn
@@ -27,7 +25,10 @@ struct HackChallengeApp: App {
                     OnboardingFlowView(didCompleteOnboarding: $didCompleteOnboarding)
 
                 } else {
-                    ContentView()
+                    ContentView(
+                        isLoggedIn: $isLoggedIn,
+                        didCompleteOnboarding: $didCompleteOnboarding
+                    )
                 }
             }
             .onOpenURL { url in

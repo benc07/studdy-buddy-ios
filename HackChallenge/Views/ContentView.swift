@@ -2,7 +2,7 @@
 //  ContentView.swift
 //  HackChallenge
 //
-//  Created by Nguyen Huu An Khang  on 11/30/25.
+//  Created by Nguyen Huu An Khang on 11/30/25.
 //
 
 import SwiftUI
@@ -13,7 +13,12 @@ enum TopTab {
 }
 
 struct ContentView: View {
+
+    // MARK: - Login Bindings
     
+    @Binding var isLoggedIn: Bool
+    @Binding var didCompleteOnboarding: Bool
+
     @State private var selectedTab: TopTab = .profile
     @State private var userBio = "Hi, I'm Ben!"
     @State private var userName = "Ben Chen"
@@ -23,7 +28,7 @@ struct ContentView: View {
     @State private var navigateToConnections = false
     @State private var searchCourse = ""
     @State private var showMenu = false
-    
+
     let allStudents: [SearchStudent] = [
         SearchStudent(id: 1, name: "Mr. Eggplant",
                       email: "eggplant@cornell.edu",
@@ -35,34 +40,35 @@ struct ContentView: View {
                       email: "wwhite@cornell.edu",
                       courses: ["CHEM 3570"])
     ]
-    
-    // MARK: - BODY
+
+    // MARK: - Body
     
     var body: some View {
         NavigationStack {
             ZStack {
                 VStack(spacing: 0) {
-                    
-                    // TOP BAR + TABS
+
                     topBar
-                    
-                    // CONTENT
+
                     if selectedTab == .profile {
-                        ScrollView {
-                            profileView
-                        }
+                        ScrollView { profileView }
                     } else {
                         searchView
                     }
                 }
-                
-                // SIDE MENU OVERLAY
+
+                // SIDE MENU
                 if showMenu {
                     SideMenuView(
                         onClose: { showMenu = false },
                         onNavigateConnections: {
                             showMenu = false
                             navigateToConnections = true
+                        },
+                        onLogout: {
+                            showMenu = false
+                            isLoggedIn = false
+                            didCompleteOnboarding = false
                         }
                     )
                 }
@@ -71,12 +77,12 @@ struct ContentView: View {
                 ConnectionsMainView()
             }
         }
-        .ignoresSafeArea(.keyboard, edges: .bottom)   // <- keyboard no longer moves layout
+        .ignoresSafeArea(.keyboard, edges: .bottom)
         .animation(.easeInOut, value: showMenu)
     }
-    
-    // MARK: - TOP BAR
-    
+
+    // MARK: - Top Bar
+
     private var topBar: some View {
         VStack(spacing: 0) {
             HStack {
@@ -86,7 +92,7 @@ struct ContentView: View {
                         .frame(width: 20, height: 20)
                         .padding(.leading, 15)
                 }
-                
+
                 Button { selectedTab = .profile } label: {
                     Image("person")
                         .resizable()
@@ -99,9 +105,9 @@ struct ContentView: View {
                         )
                         .padding(.leading, 30)
                 }
-                
+
                 Spacer()
-                
+
                 Button { selectedTab = .search } label: {
                     Image("search")
                         .resizable()
@@ -114,31 +120,31 @@ struct ContentView: View {
                         )
                         .padding(.leading, 35)
                 }
-                
+
                 Spacer()
             }
             .padding(.top)
             .padding(.bottom, 12)
-            
-            // TAB BAR
+
             HStack(spacing: 0) {
                 Rectangle()
                     .fill(selectedTab == .profile ? Color(hex:0xF7798D) : .gray.opacity(0.4))
                     .frame(height: 4)
-                
+
                 Rectangle()
                     .fill(selectedTab == .search ? Color(hex:0xF7798D) : .gray.opacity(0.4))
                     .frame(height: 4)
             }
         }
-        .background(Color.white)   // pins this region; prevents visual jump
+        .background(Color.white)
     }
-    
-    // MARK: - PROFILE VIEW
-    
+
+    // MARK: - Profile View
+
     var profileView: some View {
         VStack(alignment: .leading, spacing: 24) {
             HStack(alignment: .top, spacing: 30) {
+
                 VStack(spacing: 14) {
                     if let userImage {
                         Image(uiImage: userImage)
@@ -153,7 +159,7 @@ struct ContentView: View {
                             .frame(width: 100, height: 100)
                             .foregroundColor(.gray.opacity(0.7))
                     }
-                    
+
                     NavigationLink {
                         EditProfileView(
                             name: userName,
@@ -180,15 +186,15 @@ struct ContentView: View {
                     }
                 }
                 .padding(.top, 20)
-                
+
                 VStack(alignment: .leading, spacing: 10) {
                     Text(userName)
                         .font(.system(size: 20))
                         .fontWeight(.medium)
-                    
+
                     Text(userEmail)
                         .foregroundColor(.gray)
-                    
+
                     Text(userMajor)
                         .foregroundColor(.gray)
                 }
@@ -196,9 +202,9 @@ struct ContentView: View {
             }
             .frame(maxWidth: .infinity)
             .padding(.horizontal, 30)
-            
+
             MyScheduleView()
-            
+
             NavigationLink {
                 ClassSearchView()
             } label: {
@@ -213,24 +219,22 @@ struct ContentView: View {
                     .padding(.horizontal, 40)
             }
             .padding(.top, 35)
-            
+
             Spacer(minLength: 30)
         }
     }
-    
-    // MARK: - SEARCH
-    
+
+    // MARK: - Search
+
     var filteredStudents: [SearchStudent] {
         allStudents.filter { student in
             guard !searchCourse.isEmpty else { return false }
             return student.courses.contains { $0.localizedCaseInsensitiveContains(searchCourse) }
         }
     }
-    
+
     var searchView: some View {
         VStack(spacing: 0) {
-
-            // SEARCH BAR (fixed height)
             HStack {
                 Image(systemName: "magnifyingglass")
                     .foregroundColor(.white)
@@ -252,7 +256,6 @@ struct ContentView: View {
             .padding(.horizontal, 20)
             .padding(.top, 20)
 
-            // CONTENT SCROLLS → NO LAYOUT SHIFT
             ScrollView {
                 VStack(spacing: 0) {
 
@@ -299,9 +302,8 @@ struct ContentView: View {
             .padding(.top, 10)
         }
     }
-
 }
 
 #Preview {
-    ContentView()
+    ContentView(isLoggedIn: .constant(true), didCompleteOnboarding: .constant(true))
 }

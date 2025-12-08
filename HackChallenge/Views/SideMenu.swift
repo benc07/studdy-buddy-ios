@@ -10,9 +10,11 @@ import SwiftUI
 struct SideMenuView: View {
     var onClose: () -> Void
     var onNavigateConnections: () -> Void
+    var onLogout: () -> Void
 
     var body: some View {
         ZStack(alignment: .leading) {
+
             Color.black.opacity(0.3)
                 .ignoresSafeArea()
                 .onTapGesture { onClose() }
@@ -39,9 +41,11 @@ struct SideMenuView: View {
 
                 Divider().background(Color.white.opacity(0.4))
 
-                Button("Logout") {}
-                    .padding()
-                    .foregroundColor(.red)
+                Button("Logout") {
+                    onLogout()
+                }
+                .padding()
+                .foregroundColor(.red)
 
                 Spacer()
             }

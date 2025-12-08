@@ -14,9 +14,6 @@ class ScheduleManager: ObservableObject {
 
     @Published var addedSessions: [(session: Session, courseName: String)] = []
 
-    // -----------------------------
-    // MARK: LOAD EXISTING SCHEDULE
-    // -----------------------------
     func loadSchedule() {
         guard let user = CurrentUser.shared.user else {
             print("No logged-in user")
@@ -27,7 +24,6 @@ class ScheduleManager: ObservableObject {
             DispatchQueue.main.async {
                 self.addedSessions = response.sessions.map { sched in
 
-                    // Convert ScheduleSession → Session
                     let session = Session(
                         id: sched.id,
                         class_number: sched.class_number,
@@ -44,18 +40,13 @@ class ScheduleManager: ObservableObject {
         }
     }
 
-    // -----------------------------
-    // MARK: ADD SESSION
-    // -----------------------------
     func add(session: Session, courseName: String) {
         guard let user = CurrentUser.shared.user else { return }
 
         if isAdded(sessionID: session.id) { return }
 
-        // 1. Instant UI update
         addedSessions.append((session: session, courseName: courseName))
 
-        // 2. Send to backend
         NetworkManager.shared.addSessionToUser(
             userID: user.id,
             sessionID: session.id
@@ -73,9 +64,6 @@ class ScheduleManager: ObservableObject {
         }
     }
 
-    // -----------------------------
-    // MARK: REMOVE SESSION
-    // -----------------------------
     func remove(sessionID: Int) {
         guard let user = CurrentUser.shared.user else { return }
 
@@ -93,9 +81,6 @@ class ScheduleManager: ObservableObject {
         }
     }
 
-    // -----------------------------
-    // MARK: CHECK IF ADDED
-    // -----------------------------
     func isAdded(sessionID: Int) -> Bool {
         addedSessions.contains { $0.session.id == sessionID }
     }
