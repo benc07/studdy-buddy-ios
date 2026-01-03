@@ -1,6 +1,9 @@
 # StuddyBuddy
 
-App Tagline: Find your perfect study buddies at Cornell.
+Find your perfect study buddies at Cornell.
+
+<img height="512" alt="demo" src="https://github.com/user-attachments/assets/4277470a-a1a2-4ef4-831a-692745a88855" />
+
 
 ## Features
 - Login Authentication
